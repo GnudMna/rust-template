@@ -1,0 +1,42 @@
+[package]
+name = "rust-template"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+authors = ["Your Name <you@example.com>"]
+description = "A Rust project template"
+license = "MIT"
+readme = "README.md"
+build = "build.rs"
+
+[package.metadata.wix]
+upgrade-guid = "F99D0848-B422-41C0-A0D8-FFAB1040BFCF"
+path-guid = "4D00F4F8-DE40-4377-8F15-9511285AF00A"
+binary-guid = "C8E1F3A2-5B4D-4E7F-9A1C-3D6E8F0A2B5C"
+shortcut-guid = "E9FAA8B4-5CAD-4E7F-8A9B-0C1DCE0F41FB"
+product-icon = "assets/icon.ico"
+culture = "ja-JP"
+# perUser 専用のため ICE91 (ALLUSERS 非対応ディレクトリ) を抑制
+linker-args = ["-sice:ICE91"]
+
+[dependencies]
+
+[target.'cfg(windows)'.build-dependencies]
+winres = "0.1"
+
+[dev-dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+
+[profile.release]
+opt-level = 3
+debug = false
+strip = true
+lto = "fat"
+incremental = false
+codegen-units = 1
