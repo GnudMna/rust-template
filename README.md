@@ -104,12 +104,12 @@ git init
 ./scripts/windows/rename-project.ps1 my-project "Your Name"
 ```
 
-`Cargo.toml` の `name` を変更し、ハイフン区切りの名前は Rust の識別子規則に合わせてアンダースコアに置き換えます。
+スクリプトは kebab-case（先頭は英小文字、以降は英小文字・数字・ハイフン）のみ受け付けます。`my_app` のようなアンダースコア区切りは指定できません。`Cargo.toml` の `name` はそのまま使い、Rust の識別子（`use` など）ではハイフンをアンダースコアに置き換えます。
 
-| Cargo.toml の `name` | Rust 識別子 (`use` など) |
-| -------------------- | ------------------------ |
-| `my-project`         | `my_project`             |
-| `my_app`             | `my_app`                 |
+| kebab-case（スクリプトに渡す名前） | Rust 識別子 (`use` など) |
+| ---------------------------------- | ------------------------ |
+| `my-project`                       | `my_project`             |
+| `my-app`                           | `my_app`                 |
 
 スクリプトが自動で更新する箇所:
 
