@@ -1,7 +1,7 @@
 #!/bin/bash
 # ========================================================================
 # Script Name : check.sh
-# Description : Linux用の品質チェックスクリプト(fmt / clippy / test)
+# Description : Linux用の品質チェックスクリプト(fmt / clippy / test / doc)
 # Usage       : ./check.sh
 # ========================================================================
 
@@ -34,6 +34,11 @@ echo
 echo "テストを実行中..."
 cargo test --all-targets
 cargo test --doc
+echo
+
+# ドキュメントを生成(警告をエラーとして扱う)
+echo "ドキュメントを生成中..."
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
 echo
 
 # 完了メッセージを表示

@@ -1,6 +1,6 @@
 # ========================================================================
 # Script Name : check.ps1
-# Description : Windows用の品質チェックスクリプト(fmt / clippy / test)
+# Description : Windows用の品質チェックスクリプト(fmt / clippy / test / doc)
 # Usage       : ./check.ps1
 # Requires    : PowerShell 7.0+
 # ========================================================================
@@ -48,6 +48,24 @@ Invoke-ScriptMain {
     cargo test --doc
     if ($LASTEXITCODE -ne 0) {
         throw "エラー: cargo test --doc が終了コード $LASTEXITCODE で失敗しました"
+    }
+    Write-Host ''
+
+    # ドキュメントを生成(警告をエラーとして扱う)
+    Write-Host 'ドキュメントを生成中...'
+    $previousRustdocFlags = $env:RUSTDOCFLAGS
+    $env:RUSTDOCFLAGS = '-D warnings'
+    try {
+        cargo doc --no-deps
+        if ($LASTEXITCODE -ne 0) {
+            throw "エラー: cargo doc が終了コード $LASTEXITCODE で失敗しました"
+        }
+    } finally {
+        if ($null -eq $previousRustdocFlags) {
+            Remove-Item Env:RUSTDOCFLAGS -ErrorAction SilentlyContinue
+        } else {
+            $env:RUSTDOCFLAGS = $previousRustdocFlags
+        }
     }
     Write-Host ''
 
