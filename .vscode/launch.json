@@ -1,0 +1,139 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "デバッグ (引数なし)",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust-template",
+                    "--package=rust-template"
+                ],
+                "filter": {
+                    "name": "rust-template",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "デバッグ (引数を入力)",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust-template",
+                    "--package=rust-template"
+                ],
+                "filter": {
+                    "name": "rust-template",
+                    "kind": "bin"
+                }
+            },
+            "args": ["${input:cliArgs}"],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "デバッグ: ユニットテスト",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust-template"
+                ],
+                "filter": {
+                    "name": "rust_template",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "デバッグ: ユニットテスト (フィルタ)",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust-template"
+                ],
+                "filter": {
+                    "name": "rust_template",
+                    "kind": "lib"
+                }
+            },
+            "args": ["${input:testFilter}"],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "デバッグ: 統合テスト",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=integration_test",
+                    "--package=rust-template"
+                ],
+                "filter": {
+                    "name": "integration_test",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            },
+            "sourceLanguages": ["rust"]
+        },
+        {
+            "type": "lldb",
+            "request": "attach",
+            "name": "プロセスにアタッチ",
+            "pid": "${command:pickMyProcess}",
+            "sourceLanguages": ["rust"]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "cliArgs",
+            "type": "promptString",
+            "description": "プログラムに渡す引数",
+            "default": ""
+        },
+        {
+            "id": "testFilter",
+            "type": "promptString",
+            "description": "実行するテスト名（部分一致）。空なら全テスト",
+            "default": ""
+        }
+    ]
+}

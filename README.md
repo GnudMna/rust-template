@@ -10,7 +10,8 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 ├── .gitattributes          # 改行コード (LF) とバイナリファイルの扱い
 ├── .gitignore
 ├── .vscode/
-│   ├── extensions.json     # 推奨拡張機能 (rust-analyzer など)
+│   ├── extensions.json     # 推奨拡張機能 (rust-analyzer / CodeLLDB など)
+│   ├── launch.json         # デバッグ設定 (CodeLLDB)
 │   └── settings.json       # ワークスペース設定 (保存時フォーマット / clippy)
 ├── Cargo.toml              # プロジェクト定義・依存関係・WiX メタデータ
 ├── Cargo.lock
@@ -114,6 +115,7 @@ git init
 
 - `Cargo.toml` の `name`
 - `src/main.rs` / `tests/integration_test.rs` の `use` 文
+- `.vscode/launch.json` のパッケージ名 / バイナリ名
 - `src/lib.rs` のクレート doc コメント
 - `wix/main.wxs` のプロジェクト名
 - `[package.metadata.wix]` の `upgrade-guid` / `path-guid` / `binary-guid` / `shortcut-guid` (MSI 用。別アプリとの衝突を防ぐため再生成)
@@ -193,7 +195,7 @@ MSI は `target/wix/` に `{パッケージ名}-{バージョン}-{アーキテ�
   - 任意の PATH 追加 (機能ツリーで選択)
   - EULA ダイアログは無効 (ウェルカム画面から直接カスタマイズ画面へ)
   - 署名なし
-- **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット)
+- **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット・CodeLLDB デバッグ)
 - **ユニットテスト** (`src/lib.rs`) と **統合テスト** (`tests/`)
 
 ## ライセンス

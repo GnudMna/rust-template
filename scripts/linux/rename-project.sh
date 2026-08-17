@@ -79,6 +79,12 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
         fi
     fi
 
+    # デバッグ設定のパッケージ名 / バイナリ名を更新
+    if [[ -f .vscode/launch.json ]]; then
+        sed -i "s/${CURRENT_NAME}/${NEW_NAME}/g" .vscode/launch.json
+        sed -i "s/${OLD_IDENT}/${NEW_IDENT}/g" .vscode/launch.json
+    fi
+
     # use 文のクレート名を更新
     for file in src/main.rs tests/integration_test.rs; do
         sed -i "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"

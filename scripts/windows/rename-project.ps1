@@ -135,6 +135,15 @@ Invoke-ScriptMain {
 
         Write-Utf8NoBom -Path $CargoTomlPath -Value $CargoToml
 
+        # デバッグ設定のパッケージ名 / バイナリ名を更新
+        $LaunchJsonPath = Join-Path $ProjectRoot '.vscode\launch.json'
+        if (Test-Path -LiteralPath $LaunchJsonPath) {
+            $LaunchJson = Read-Utf8NoBom -Path $LaunchJsonPath
+            $LaunchJson = $LaunchJson.Replace($CurrentName, $NewName)
+            $LaunchJson = $LaunchJson.Replace($OldIdent, $NewIdent)
+            Write-Utf8NoBom -Path $LaunchJsonPath -Value $LaunchJson
+        }
+
         # use 文と doc コメントのクレート名を更新
         foreach ($File in @('src/main.rs', 'tests/integration_test.rs', 'src/lib.rs')) {
             $FilePath = Join-Path $ProjectRoot $File
