@@ -1,11 +1,64 @@
-use rust_template::{greet, names_from_args};
+//! `rust-template` バイナリの統合テスト
 
-#[test]
-fn integration_greet() {
-    assert_eq!(greet("integration"), "Hello, integration!");
+use std::env;
+use std::path::PathBuf;
+use std::process::{Command, Output};
+
+/// 統合テストから起動するバイナリのパスを返す
+fn bin_path() -> PathBuf {
+    let env_key = format!("CARGO_BIN_EXE_{}", env!("CARGO_PKG_NAME").replace('-', "_"));
+
+    if let Some(path) = env::var_os(env_key) {
+        return PathBuf::from(path);
+    }
+
+    // `cargo test` 以外でテストバイナリを直接実行した場合のフォールバック
+    let mut path = env::current_exe()
+        .unwrap_or_else(|error| panic!("テスト実行ファイルのパスを取得できません: {error}"));
+    path.pop();
+    if path.file_name().is_some_and(|name| name == "deps") {
+        path.pop();
+    }
+    path.push(format!(
+        "{}{}",
+        env!("CARGO_PKG_NAME"),
+        env::consts::EXE_SUFFIX
+    ));
+    path
 }
 
+fn bin() -> Command {
+    Command::new(bin_path())
+}
+
+fn run(args: &[&str]) -> Output {
+    bin()
+        .args(args)
+        .output()
+        .unwrap_or_else(|error| panic!("バイナリの起動に失敗しました: {error}"))
+}
+
+fn assert_success_stdout(output: &Output, expected_stdout: &str) {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+
+    assert!(
+        output.status.success(),
+        "終了コードが成功ではありません: status={:?}, stdout={stdout}, stderr={stderr}",
+        output.status.code()
+    );
+    assert_eq!(stderr.as_ref(), "", "stderr が空ではありません: {stderr}");
+    assert_eq!(stdout.as_ref(), expected_stdout);
+}
+
+/// 引数がない場合は既定の挨拶を出力すること
 #[test]
-fn integration_names_from_args() {
-    assert_eq!(names_from_args(["integration"]), ["integration"]);
+fn prints_default_greeting_without_args() {
+    assert_success_stdout(&run(&[]), "Hello, world!\n");
+}
+
+/// 渡された各引数に対して挨拶を出力すること
+#[test]
+fn prints_greeting_for_each_argument() {
+    assert_success_stdout(&run(&["Alice", "Bob"]), "Hello, Alice!\nHello, Bob!\n");
 }
