@@ -128,7 +128,7 @@ git init
 - `README.md` のタイトル
 - `assets/icon.ico` (Windows 向け exe / MSI アイコン)
 
-著作権表記は `LICENSE` と `build.rs` の `LEGAL_COPYRIGHT` で同じ形式 (`Copyright (c) 2026 Your Name`) に揃えてください。
+著作権表記は `LICENSE` と `build.rs` の `LEGAL_COPYRIGHT` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
 
 ### 3. ビルド・実行・テスト
 

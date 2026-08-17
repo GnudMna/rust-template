@@ -105,7 +105,8 @@ if [[ -n "$COPYRIGHT_HOLDER" ]]; then
     fi
 
     OLD_COPYRIGHT_HOLDER="$(grep -E '^Copyright \(c\) ' LICENSE | sed -E 's/^Copyright \(c\) [0-9]+ (.*)/\1/')"
-    COPYRIGHT_LINE="Copyright (c) 2026 ${COPYRIGHT_HOLDER}"
+    COPYRIGHT_YEAR="$(date +%Y)"
+    COPYRIGHT_LINE="Copyright (c) ${COPYRIGHT_YEAR} ${COPYRIGHT_HOLDER}"
     sed -i '' "s/^Copyright (c) .*/${COPYRIGHT_LINE}/" LICENSE
     sed -i '' "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE}\";/" build.rs
 

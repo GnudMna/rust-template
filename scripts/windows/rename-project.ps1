@@ -182,7 +182,8 @@ Invoke-ScriptMain {
             Write-Host ''
         }
 
-        $CopyrightLine = 'Copyright (c) 2026 ' + $CopyrightHolder
+        $CopyrightYear = Get-Date -Format 'yyyy'
+        $CopyrightLine = "Copyright (c) $CopyrightYear $CopyrightHolder"
 
         $LicensePath = Join-Path $ProjectRoot 'LICENSE'
         $License = Read-Utf8NoBom -Path $LicensePath
