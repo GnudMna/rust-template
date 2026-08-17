@@ -1,7 +1,9 @@
 /// Windows リソースの著作権表記。`LICENSE` と揃えて更新してください。
+#[cfg(windows)]
 const LEGAL_COPYRIGHT: &str = "Copyright (c) 2026 Your Name";
 
 // PascalCase の場合は定数として直接記述してください
+#[cfg(windows)]
 const APP_NAME: &str = env!("CARGO_PKG_NAME");
 
 fn main() {
