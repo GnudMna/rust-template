@@ -85,13 +85,11 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
         sed -i "s/${OLD_IDENT}/${NEW_IDENT}/g" .vscode/launch.json
     fi
 
-    # use 文のクレート名を更新
-    for file in src/main.rs tests/integration_test.rs; do
+    # use 文と doc コメントのクレート名を更新
+    for file in src/main.rs tests/integration_test.rs src/lib.rs; do
         sed -i "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"
+        sed -i "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" "$file"
     done
-
-    # lib.rs の doc コメントを更新
-    sed -i "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" src/lib.rs
 
     # wix/main.wxs のプロジェクト名を更新
     if [[ -f wix/main.wxs ]]; then

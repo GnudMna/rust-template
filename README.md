@@ -114,9 +114,8 @@ git init
 スクリプトが自動で更新する箇所:
 
 - `Cargo.toml` の `name`
-- `src/main.rs` / `tests/integration_test.rs` の `use` 文
+- `src/main.rs` / `src/lib.rs` / `tests/integration_test.rs` の `use` 文とクレート doc コメント
 - `.vscode/launch.json` のパッケージ名 / バイナリ名
-- `src/lib.rs` のクレート doc コメント
 - `wix/main.wxs` のプロジェクト名
 - `[package.metadata.wix]` の `upgrade-guid` / `path-guid` / `binary-guid` / `shortcut-guid` (MSI 用。別アプリとの衝突を防ぐため再生成)
 - `Cargo.lock` (`cargo check` で再生成)
