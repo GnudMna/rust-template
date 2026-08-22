@@ -1,7 +1,7 @@
 #!/bin/bash
 # ========================================================================
 # Script Name : check.sh
-# Description : macOS用の品質チェックスクリプト(fmt / clippy / test / doc)
+# Description : Unix (Linux / macOS) 向けの品質チェックスクリプト(fmt / clippy / test / doc)
 # Usage       : ./check.sh
 # ========================================================================
 

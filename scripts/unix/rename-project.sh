@@ -10,6 +10,13 @@
 # シェルオプションを設定(エラー時に即終了)
 set -euo pipefail
 
+# GNU sed (Linux) は `sed -i`, BSD sed (macOS) は `sed -i ''`
+if [[ "$(uname -s)" == Darwin ]]; then
+    sed_inplace() { sed -i '' "$@"; }
+else
+    sed_inplace() { sed -i "$@"; }
+fi
+
 # 使い方を表示して終了
 usage() {
     echo "Usage: $0 <new-name> [copyright-holder]" >&2
@@ -55,7 +62,7 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
     echo
 
     # Cargo.toml の name を更新
-    sed -i "s/^name = \"${CURRENT_NAME}\"/name = \"${NEW_NAME}\"/" Cargo.toml
+    sed_inplace "s/^name = \"${CURRENT_NAME}\"/name = \"${NEW_NAME}\"/" Cargo.toml
 
     # MSI 用 GUID を再生成(別アプリとの衝突を防ぐ)
     if grep -qE '^upgrade-guid = ' Cargo.toml && grep -qE '^path-guid = ' Cargo.toml && grep -qE '^binary-guid = ' Cargo.toml && grep -qE '^shortcut-guid = ' Cargo.toml; then
@@ -67,33 +74,33 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
         NEW_PATH_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
         NEW_BINARY_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
         NEW_SHORTCUT_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
-        sed -i "s/^upgrade-guid = \".*\"/upgrade-guid = \"${NEW_UPGRADE_GUID}\"/" Cargo.toml
-        sed -i "s/^path-guid = \".*\"/path-guid = \"${NEW_PATH_GUID}\"/" Cargo.toml
-        sed -i "s/^binary-guid = \".*\"/binary-guid = \"${NEW_BINARY_GUID}\"/" Cargo.toml
-        sed -i "s/^shortcut-guid = \".*\"/shortcut-guid = \"${NEW_SHORTCUT_GUID}\"/" Cargo.toml
+        sed_inplace "s/^upgrade-guid = \".*\"/upgrade-guid = \"${NEW_UPGRADE_GUID}\"/" Cargo.toml
+        sed_inplace "s/^path-guid = \".*\"/path-guid = \"${NEW_PATH_GUID}\"/" Cargo.toml
+        sed_inplace "s/^binary-guid = \".*\"/binary-guid = \"${NEW_BINARY_GUID}\"/" Cargo.toml
+        sed_inplace "s/^shortcut-guid = \".*\"/shortcut-guid = \"${NEW_SHORTCUT_GUID}\"/" Cargo.toml
         if [[ -f wix/main.wxs ]]; then
-            sed -i "s/${OLD_UPGRADE_GUID}/${NEW_UPGRADE_GUID}/g" wix/main.wxs
-            sed -i "s/${OLD_PATH_GUID}/${NEW_PATH_GUID}/g" wix/main.wxs
-            sed -i "s/${OLD_BINARY_GUID}/${NEW_BINARY_GUID}/g" wix/main.wxs
-            sed -i "s/${OLD_SHORTCUT_GUID}/${NEW_SHORTCUT_GUID}/g" wix/main.wxs
+            sed_inplace "s/${OLD_UPGRADE_GUID}/${NEW_UPGRADE_GUID}/g" wix/main.wxs
+            sed_inplace "s/${OLD_PATH_GUID}/${NEW_PATH_GUID}/g" wix/main.wxs
+            sed_inplace "s/${OLD_BINARY_GUID}/${NEW_BINARY_GUID}/g" wix/main.wxs
+            sed_inplace "s/${OLD_SHORTCUT_GUID}/${NEW_SHORTCUT_GUID}/g" wix/main.wxs
         fi
     fi
 
     # デバッグ設定のパッケージ名 / バイナリ名を更新
     if [[ -f .vscode/launch.json ]]; then
-        sed -i "s/${CURRENT_NAME}/${NEW_NAME}/g" .vscode/launch.json
-        sed -i "s/${OLD_IDENT}/${NEW_IDENT}/g" .vscode/launch.json
+        sed_inplace "s/${CURRENT_NAME}/${NEW_NAME}/g" .vscode/launch.json
+        sed_inplace "s/${OLD_IDENT}/${NEW_IDENT}/g" .vscode/launch.json
     fi
 
     # use 文と doc コメントのクレート名を更新
     for file in src/main.rs tests/integration_test.rs src/lib.rs; do
-        sed -i "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"
-        sed -i "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" "$file"
+        sed_inplace "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"
+        sed_inplace "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" "$file"
     done
 
     # wix/main.wxs のプロジェクト名を更新
     if [[ -f wix/main.wxs ]]; then
-        sed -i "s/${CURRENT_NAME}/${NEW_NAME}/g" wix/main.wxs
+        sed_inplace "s/${CURRENT_NAME}/${NEW_NAME}/g" wix/main.wxs
     fi
 fi
 
@@ -107,12 +114,12 @@ if [[ -n "$COPYRIGHT_HOLDER" ]]; then
     OLD_COPYRIGHT_HOLDER="$(grep -E '^Copyright \(c\) ' LICENSE | sed -E 's/^Copyright \(c\) [0-9]+ (.*)/\1/')"
     COPYRIGHT_YEAR="$(date +%Y)"
     COPYRIGHT_LINE="Copyright (c) ${COPYRIGHT_YEAR} ${COPYRIGHT_HOLDER}"
-    sed -i "s/^Copyright (c) .*/${COPYRIGHT_LINE}/" LICENSE
-    sed -i "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE}\";/" build.rs
+    sed_inplace "s/^Copyright (c) .*/${COPYRIGHT_LINE}/" LICENSE
+    sed_inplace "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE}\";/" build.rs
 
     # wix/main.wxs の Manufacturer とレジストリキーを更新
     if [[ -f wix/main.wxs && -n "$OLD_COPYRIGHT_HOLDER" && "$OLD_COPYRIGHT_HOLDER" != "$COPYRIGHT_HOLDER" ]]; then
-        sed -i "s/${OLD_COPYRIGHT_HOLDER}/${COPYRIGHT_HOLDER}/g" wix/main.wxs
+        sed_inplace "s/${OLD_COPYRIGHT_HOLDER}/${COPYRIGHT_HOLDER}/g" wix/main.wxs
     fi
 fi
 

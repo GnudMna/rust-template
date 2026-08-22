@@ -1,8 +1,8 @@
 #!/bin/bash
 # ========================================================================
-# Script Name : format.sh
-# Description : macOS用のコード整形スクリプト
-# Usage       : ./format.sh
+# Script Name : clippy.sh
+# Description : Unix (Linux / macOS) 向けの Clippy 実行スクリプト
+# Usage       : ./clippy.sh
 # ========================================================================
 
 # シェルオプションを設定(エラー時に即終了)
@@ -14,15 +14,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../common/cd-project-root.sh"
 
 # エラー時のメッセージを設定
-trap 'echo "コード整形に失敗しました" >&2' ERR
+trap 'echo "Clippy に失敗しました" >&2' ERR
 
-# rustfmt を実行
-echo "rustfmt によるコード整形を実行しています..."
+# Clippy を実行
+echo "Clippy による静的解析を実行しています..."
 echo
 
-echo "コード整形を実行中..."
-cargo fmt
+echo "Clippy を実行中..."
+cargo clippy --all-targets -- -D warnings
 echo
 
 # 完了メッセージを表示
-echo "コード整形が完了しました"
+echo "Clippy が完了しました"

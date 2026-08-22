@@ -33,14 +33,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
     │   ├── cd-project-root.sh
     │   ├── cd-project-root.ps1
     │   └── wait-if-double-clicked.ps1
-    ├── linux/                  # Linux 向けエントリポイント
-    │   ├── build.sh
-    │   ├── test.sh
-    │   ├── clippy.sh
-    │   ├── format.sh
-    │   ├── check.sh
-    │   └── rename-project.sh
-    ├── macos/                  # macOS 向けエントリポイント
+    ├── unix/                   # Linux / macOS 向けエントリポイント
     │   ├── build.sh
     │   ├── test.sh
     │   ├── clippy.sh
@@ -83,18 +76,11 @@ git init
 
 スクリプトで一括変更する場合 (推奨):
 
-**Linux**
+**Linux / macOS**
 
 ```bash
-./scripts/linux/rename-project.sh my-project
-./scripts/linux/rename-project.sh my-project "Your Name"   # 著作権者も同時に更新
-```
-
-**macOS**
-
-```bash
-./scripts/macos/rename-project.sh my-project
-./scripts/macos/rename-project.sh my-project "Your Name"   # 著作権者も同時に更新
+./scripts/unix/rename-project.sh my-project
+./scripts/unix/rename-project.sh my-project "Your Name"   # 著作権者も同時に更新
 ```
 
 **Windows**
@@ -144,26 +130,15 @@ cargo fmt
 
 スクリプトを使う場合 (どこから実行してもプロジェクトルートに移動してから実行します):
 
-**Linux**
+**Linux / macOS**
 
 ```bash
-./scripts/linux/build.sh          # デバッグビルド
-./scripts/linux/build.sh --release
-./scripts/linux/test.sh
-./scripts/linux/clippy.sh
-./scripts/linux/format.sh
-./scripts/linux/check.sh          # CI 向け一括チェック (fmt / clippy / test / doc)
-```
-
-**macOS**
-
-```bash
-./scripts/macos/build.sh          # デバッグビルド
-./scripts/macos/build.sh --release
-./scripts/macos/test.sh
-./scripts/macos/clippy.sh
-./scripts/macos/format.sh
-./scripts/macos/check.sh          # CI 向け一括チェック (fmt / clippy / test / doc)
+./scripts/unix/build.sh          # デバッグビルド
+./scripts/unix/build.sh --release
+./scripts/unix/test.sh
+./scripts/unix/clippy.sh
+./scripts/unix/format.sh
+./scripts/unix/check.sh          # CI 向け一括チェック (fmt / clippy / test / doc)
 ```
 
 **Windows**
