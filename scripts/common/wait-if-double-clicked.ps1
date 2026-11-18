@@ -108,6 +108,8 @@ function Invoke-ScriptMain {
     $exitCode = 0
 
     try {
+        # StrictMode 下の未設定参照エラーと、直前コマンドの終了コード混入を防ぐ
+        $global:LASTEXITCODE = 0
         & $Body
 
         if ($LASTEXITCODE -ne 0) {
