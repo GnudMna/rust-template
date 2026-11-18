@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ========================================================================
 # Script Name : format.sh
 # Description : Unix (Linux / macOS) 向けのコード整形スクリプト

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ========================================================================
 # Script Name : clippy.sh
 # Description : Unix (Linux / macOS) 向けの Clippy 実行スクリプト

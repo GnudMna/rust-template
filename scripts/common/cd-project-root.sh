@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ========================================================================
 # Script Name : cd-project-root.sh
 # Description : プロジェクトのルートディレクトリに移動するシェルスクリプト
-# Usage       : cd-project-root.sh
+# Usage       : source "$SCRIPT_DIR/../common/cd-project-root.sh"
 # ========================================================================
 
 # スクリプトのディレクトリを取得

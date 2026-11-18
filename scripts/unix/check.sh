@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ========================================================================
 # Script Name : check.sh
 # Description : Unix (Linux / macOS) 向けの品質チェックスクリプト(fmt / clippy / test / doc)

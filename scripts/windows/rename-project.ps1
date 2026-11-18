@@ -75,7 +75,7 @@ Invoke-ScriptMain {
     $NewIdent = $NewName -replace '-', '_'
     $OldIdent = $CurrentName -replace '-', '_'
 
-  # 変更が不要な場合は終了(著作権者のみ更新する場合は続行)
+    # 変更が不要な場合は終了(著作権者のみ更新する場合は続行)
     $NameUnchanged = $CurrentName -eq $NewName
     if ($NameUnchanged -and -not $CopyrightHolder) {
         Write-Host "プロジェクト名は既に `"$NewName`" です"

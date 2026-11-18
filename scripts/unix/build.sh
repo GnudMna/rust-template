@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ========================================================================
 # Script Name : build.sh
 # Description : Unix (Linux / macOS) 向けのビルド実行スクリプト
