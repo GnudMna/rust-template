@@ -56,6 +56,11 @@ Invoke-ScriptMain {
         throw 'エラー: プロジェクト名は kebab-case で指定してください (例: my-project)'
     }
 
+    # 著作権者名を検証(build.rs の文字列リテラルを壊す文字は不可)
+    if ($CopyrightHolder -match '["\\\p{Cc}]') {
+        throw 'エラー: 著作権者名に " \ および制御文字(改行など)は使用できません'
+    }
+
     # 現在のプロジェクト名と Rust 識別子を取得
     $CargoTomlPath = Join-Path $ProjectRoot 'Cargo.toml'
     $CargoToml = Read-Utf8NoBom -Path $CargoTomlPath
@@ -116,12 +121,14 @@ Invoke-ScriptMain {
 
         $LicensePath = Join-Path $ProjectRoot 'LICENSE'
         $License = Read-Utf8NoBom -Path $LicensePath
-        $License = [regex]::Replace($License, '(?m)^Copyright \(c\) .*', $CopyrightLine)
+        # 置換文字列中の $ を展開させないようエスケープ
+        $CopyrightReplacement = $CopyrightLine.Replace('$', '$$')
+        $License = [regex]::Replace($License, '(?m)^Copyright \(c\) .*', $CopyrightReplacement)
         Write-Utf8NoBom -Path $LicensePath -Value $License
 
         $BuildRsPath = Join-Path $ProjectRoot 'build.rs'
         $BuildRs = Read-Utf8NoBom -Path $BuildRsPath
-        $LegalCopyright = 'const LEGAL_COPYRIGHT: &str = "' + $CopyrightLine + '";'
+        $LegalCopyright = 'const LEGAL_COPYRIGHT: &str = "' + $CopyrightReplacement + '";'
         $BuildRs = [regex]::Replace($BuildRs, 'const LEGAL_COPYRIGHT: &str = ".*";', $LegalCopyright)
         Write-Utf8NoBom -Path $BuildRsPath -Value $BuildRs
     }

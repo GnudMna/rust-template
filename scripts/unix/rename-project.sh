@@ -42,6 +42,12 @@ if [[ ! "$NEW_NAME" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
     exit 1
 fi
 
+# 著作権者名を検証(build.rs の文字列リテラルを壊す文字は不可)
+if [[ "$COPYRIGHT_HOLDER" == *'"'* || "$COPYRIGHT_HOLDER" == *'\'* || "$COPYRIGHT_HOLDER" =~ [[:cntrl:]] ]]; then
+    echo "エラー: 著作権者名に \" \\ および制御文字(改行など)は使用できません" >&2
+    exit 1
+fi
+
 # 現在のプロジェクト名と Rust 識別子を取得
 CURRENT_NAME="$(grep -E '^name = ' Cargo.toml | head -1 | sed -E 's/^name = "(.*)"/\1/')"
 NEW_IDENT="${NEW_NAME//-/_}"
@@ -86,8 +92,10 @@ if [[ -n "$COPYRIGHT_HOLDER" ]]; then
 
     COPYRIGHT_YEAR="$(date +%Y)"
     COPYRIGHT_LINE="Copyright (c) ${COPYRIGHT_YEAR} ${COPYRIGHT_HOLDER}"
-    sed_inplace "s/^Copyright (c) .*/${COPYRIGHT_LINE}/" LICENSE
-    sed_inplace "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE}\";/" build.rs
+    # sed の置換文字列で特殊な文字(/ と &)をエスケープ
+    COPYRIGHT_LINE_ESCAPED="$(printf '%s' "$COPYRIGHT_LINE" | sed -e 's/[\/&]/\\&/g')"
+    sed_inplace "s/^Copyright (c) .*/${COPYRIGHT_LINE_ESCAPED}/" LICENSE
+    sed_inplace "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE_ESCAPED}\";/" build.rs
 fi
 
 # Cargo.lock を更新
