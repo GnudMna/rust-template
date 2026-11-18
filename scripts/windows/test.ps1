@@ -14,6 +14,9 @@ $ErrorActionPreference = 'Stop'
 # ダブルクリック実行時の Enter 待ちヘルパーを読み込み
 . (Join-Path $PSScriptRoot '..\common\wait-if-double-clicked.ps1')
 
+# ネイティブコマンドの終了コード検査ヘルパーを読み込み
+. (Join-Path $PSScriptRoot '..\common\invoke-native.ps1')
+
 Invoke-ScriptMain {
     # プロジェクトルートへ移動
     . (Join-Path $PSScriptRoot '..\common\cd-project-root.ps1')
@@ -23,16 +26,9 @@ Invoke-ScriptMain {
     Write-Host ''
 
     Write-Host 'テストを実行中...'
-    cargo test --all-targets
+    Invoke-Native cargo test --all-targets
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "エラー: cargo test が終了コード $LASTEXITCODE で失敗しました"
-    }
-
-    cargo test --doc
-    if ($LASTEXITCODE -ne 0) {
-        throw "エラー: cargo test --doc が終了コード $LASTEXITCODE で失敗しました"
-    }
+    Invoke-Native cargo test --doc
 
     Write-Host ''
     Write-Host 'すべてのテストが完了しました'

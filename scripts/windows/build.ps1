@@ -25,6 +25,9 @@ if ($args -contains '--release' -or $args -contains '-r') {
 # ダブルクリック実行時の Enter 待ちヘルパーを読み込み
 . (Join-Path $PSScriptRoot '..\common\wait-if-double-clicked.ps1')
 
+# ネイティブコマンドの終了コード検査ヘルパーを読み込み
+. (Join-Path $PSScriptRoot '..\common\invoke-native.ps1')
+
 Invoke-ScriptMain {
     # プロジェクトルートへ移動
     . (Join-Path $PSScriptRoot '..\common\cd-project-root.ps1')
@@ -35,14 +38,10 @@ Invoke-ScriptMain {
 
     if ($IsRelease) {
         Write-Host 'リリースビルドを実行中...'
-        cargo build --release
+        Invoke-Native cargo build --release
     } else {
         Write-Host 'デバッグビルドを実行中...'
-        cargo build
-    }
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "エラー: cargo build が終了コード $LASTEXITCODE で失敗しました"
+        Invoke-Native cargo build
     }
 
     Write-Host ''
