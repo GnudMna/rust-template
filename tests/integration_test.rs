@@ -6,7 +6,8 @@ use std::process::{Command, Output};
 
 /// 統合テストから起動するバイナリのパスを返す
 fn bin_path() -> PathBuf {
-    let env_key = format!("CARGO_BIN_EXE_{}", env!("CARGO_PKG_NAME").replace('-', "_"));
+    // Cargo はバイナリ名をそのまま使う (`-` は `_` に置換されない)
+    let env_key = format!("CARGO_BIN_EXE_{}", env!("CARGO_PKG_NAME"));
 
     if let Some(path) = env::var_os(env_key) {
         return PathBuf::from(path);
