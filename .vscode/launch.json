@@ -38,7 +38,7 @@
                     "kind": "bin"
                 }
             },
-            "args": ["${input:cliArgs}"],
+            "args": "${input:cliArgs}",
             "cwd": "${workspaceFolder}",
             "env": {
                 "RUST_BACKTRACE": "1"
