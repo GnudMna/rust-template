@@ -51,15 +51,26 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 
 ### 前提
 
-- **Windows**: [PowerShell 7 以上](https://github.com/PowerShell/PowerShell/releases) (`pwsh`)。スクリプトは UTF-8 (BOM なし) です。エクスプローラーからダブルクリックで実行した場合は、結果を確認できるよう Enter 待ちになります (ターミナルからの実行では待ちません)。
-- **Windows リリースビルド**: Visual Studio Build Tools など MSVC ツールチェーン (C++ ワークロード) が必要です。
+- **Windows**: [PowerShell 7 以上](https://github.com/PowerShell/PowerShell/releases) (`pwsh`)。スクリプトは UTF-8 (BOM なし) です。`.ps1` は既定の関連付けではダブルクリックするとメモ帳で開かれます。ダブルクリックで実行したい場合は、`.ps1` の関連付けを `pwsh` に変更してください。関連付けを変更してエクスプローラーからダブルクリックで実行した場合は、結果を確認できるよう Enter 待ちになります (ターミナルからの実行では待ちません)。
+- **Windows ビルド (デバッグ / リリース共通)**: Visual Studio Build Tools など MSVC ツールチェーン (C++ ワークロード、リンカと Windows SDK の `rc.exe` を含む) が必要です。
 
 ### 1. テンプレートから新規プロジェクトを作る
+
+**Linux / macOS**
 
 ```bash
 git clone <Template Repo URL> my-project
 cd my-project
 rm -rf .git
+git init
+```
+
+**Windows**
+
+```powershell
+git clone <Template Repo URL> my-project
+cd my-project
+Remove-Item -Recurse -Force .git
 git init
 ```
 
