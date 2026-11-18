@@ -72,8 +72,14 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
 
     # デバッグ設定のパッケージ名 / バイナリ名を更新
     if [[ -f .vscode/launch.json ]]; then
-        sed_inplace "s/${CURRENT_NAME}/${NEW_NAME}/g" .vscode/launch.json
-        sed_inplace "s/${OLD_IDENT}/${NEW_IDENT}/g" .vscode/launch.json
+        # 項目単位で置換する(部分文字列置換だと 2 回目以降のリネームで名前が壊れる)
+        sed_inplace -E \
+            -e ':a' -e 'N' -e '$!ba' \
+            -e "s/(--bin=)${CURRENT_NAME}\"/\1${NEW_NAME}\"/g" \
+            -e "s/(--package=)${CURRENT_NAME}\"/\1${NEW_NAME}\"/g" \
+            -e "s/(\"name\": \")${CURRENT_NAME}(\",[[:space:]]*\"kind\": \"bin\")/\1${NEW_NAME}\2/g" \
+            -e "s/(\"name\": \")${OLD_IDENT}(\",[[:space:]]*\"kind\": \"lib\")/\1${NEW_IDENT}\2/g" \
+            .vscode/launch.json
     fi
 
     # use 文と doc コメントのクレート名を更新

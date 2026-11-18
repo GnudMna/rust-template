@@ -92,8 +92,14 @@ Invoke-ScriptMain {
         $LaunchJsonPath = Join-Path $ProjectRoot '.vscode\launch.json'
         if (Test-Path -LiteralPath $LaunchJsonPath) {
             $LaunchJson = Read-Utf8NoBom -Path $LaunchJsonPath
-            $LaunchJson = $LaunchJson.Replace($CurrentName, $NewName)
-            $LaunchJson = $LaunchJson.Replace($OldIdent, $NewIdent)
+            # 項目単位で置換する(部分文字列置換だと 2 回目以降のリネームで名前が壊れる)
+            $EscName = [regex]::Escape($CurrentName)
+            $EscIdent = [regex]::Escape($OldIdent)
+            $NewNameRep = $NewName.Replace('$', '$$')
+            $NewIdentRep = $NewIdent.Replace('$', '$$')
+            $LaunchJson = $LaunchJson -replace "(--(?:bin|package)=)$EscName`"", "`${1}$NewNameRep`""
+            $LaunchJson = $LaunchJson -replace "(`"name`": `")$EscName(`",\s*`"kind`": `"bin`")", "`${1}$NewNameRep`${2}"
+            $LaunchJson = $LaunchJson -replace "(`"name`": `")$EscIdent(`",\s*`"kind`": `"lib`")", "`${1}$NewIdentRep`${2}"
             Write-Utf8NoBom -Path $LaunchJsonPath -Value $LaunchJson
         }
 
