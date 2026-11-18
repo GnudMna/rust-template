@@ -107,6 +107,9 @@ function Invoke-ScriptMain {
 
     $exitCode = 0
 
+    # カレントディレクトリはセッション全体で共有されるため、終了時に呼び出し元へ戻す
+    Push-Location
+
     try {
         # StrictMode 下の未設定参照エラーと、直前コマンドの終了コード混入を防ぐ
         $global:LASTEXITCODE = 0
@@ -125,6 +128,7 @@ function Invoke-ScriptMain {
             Write-Host $_
         }
     } finally {
+        Pop-Location
         Wait-IfDoubleClicked
     }
 
