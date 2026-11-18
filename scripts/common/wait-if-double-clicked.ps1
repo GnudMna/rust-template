@@ -28,60 +28,26 @@ function Test-StartedAsFileInvocation {
     return $false
 }
 
-# 既存のターミナル / エディタホストか (自分自身の pwsh.exe は呼び出し側で除外する)
-function Test-IsExistingTerminalProcess {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Name
-    )
-
-    $terminalNames = @(
-        'cmd.exe',
-        'pwsh.exe',
-        'powershell.exe',
-        'windowsterminal.exe',
-        'openconsole.exe',
-        'conhost.exe',
-        'wt.exe',
-        'code.exe',
-        'cursor.exe',
-        'devenv.exe'
-    )
-
-    return $terminalNames -contains $Name
-}
-
-# エクスプローラー経由の起動かどうかを親プロセスチェーンで判定する
+# エクスプローラー経由の起動かどうかを直接の親プロセスで判定する
+# (端末の一覧を管理せずに済むよう、親が explorer.exe / OpenWith.exe の場合のみ対象とする)
 function Test-LaunchedFromExplorer {
     try {
-        # 対話ホスト内での実行は、explorer が祖先でも待たない
+        # 対話ホスト内での実行は、親が explorer でも待たない
         if (-not (Test-StartedAsFileInvocation)) {
             return $false
         }
 
-        $process = Get-CimInstance Win32_Process -Filter "ProcessId=$PID" -ErrorAction Stop
-        $depth = 0
-
-        while ($process -and $depth -lt 12) {
-            $name = $process.Name.ToLowerInvariant()
-            if ($name -eq 'explorer.exe' -or $name -eq 'openwith.exe') {
-                return $true
-            }
-
-            # cmd / Windows Terminal など既存シェルの子なら、explorer が祖先でも待たない
-            if ($depth -gt 0 -and (Test-IsExistingTerminalProcess -Name $name)) {
-                return $false
-            }
-
-            if ($process.ParentProcessId -eq 0) {
-                break
-            }
-
-            $process = Get-CimInstance Win32_Process -Filter "ProcessId=$($process.ParentProcessId)" -ErrorAction SilentlyContinue
-            $depth++
+        $self = Get-CimInstance Win32_Process -Filter "ProcessId=$PID" -ErrorAction Stop
+        if (-not $self -or $self.ParentProcessId -eq 0) {
+            return $false
         }
 
-        return $false
+        $parent = Get-CimInstance Win32_Process -Filter "ProcessId=$($self.ParentProcessId)" -ErrorAction Stop
+        if (-not $parent) {
+            return $false
+        }
+
+        return @('explorer.exe', 'openwith.exe') -contains $parent.Name.ToLowerInvariant()
     } catch {
         return $false
     }
