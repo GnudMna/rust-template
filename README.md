@@ -15,7 +15,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 │   └── settings.json       # ワークスペース設定 (保存時フォーマット / clippy)
 ├── Cargo.toml              # プロジェクト定義・依存関係
 ├── Cargo.lock
-├── build.rs                # Windows 向け exe リソース埋め込み (winres)
+├── build.rs                # Windows 向け exe リソース埋め込み (winresource)
 ├── rust-toolchain.toml     # Rust ツールチェーン (1.96 + rustfmt / clippy)
 ├── rustfmt.toml            # rustfmt 設定
 ├── LICENSE
@@ -145,7 +145,7 @@ cargo fmt
 - **Edition 2024** / `rust-version = "1.96"` (`rust-toolchain.toml` で固定)
 - **Clippy / Rust lints** (`unsafe_code = forbid` など)
 - **Release プロファイル** (LTO・strip 有効)
-- **Windows リソース** (`build.rs` + `winres` でアイコン・バージョン・著作権を exe に埋め込み。`winres` は Windows ビルド時のみ依存)
+- **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行)
 - **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット・CodeLLDB デバッグ)
 - **ユニットテスト** (`src/lib.rs`) と **統合テスト** (`tests/`)
 
