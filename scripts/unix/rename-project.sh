@@ -64,28 +64,6 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
     # Cargo.toml の name を更新
     sed_inplace "s/^name = \"${CURRENT_NAME}\"/name = \"${NEW_NAME}\"/" Cargo.toml
 
-    # MSI 用 GUID を再生成(別アプリとの衝突を防ぐ)
-    if grep -qE '^upgrade-guid = ' Cargo.toml && grep -qE '^path-guid = ' Cargo.toml && grep -qE '^binary-guid = ' Cargo.toml && grep -qE '^shortcut-guid = ' Cargo.toml; then
-        OLD_UPGRADE_GUID="$(grep -E '^upgrade-guid = ' Cargo.toml | sed -E 's/^upgrade-guid = "(.*)"/\1/')"
-        OLD_PATH_GUID="$(grep -E '^path-guid = ' Cargo.toml | sed -E 's/^path-guid = "(.*)"/\1/')"
-        OLD_BINARY_GUID="$(grep -E '^binary-guid = ' Cargo.toml | sed -E 's/^binary-guid = "(.*)"/\1/')"
-        OLD_SHORTCUT_GUID="$(grep -E '^shortcut-guid = ' Cargo.toml | sed -E 's/^shortcut-guid = "(.*)"/\1/')"
-        NEW_UPGRADE_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
-        NEW_PATH_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
-        NEW_BINARY_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
-        NEW_SHORTCUT_GUID="$(uuidgen | tr '[:lower:]' '[:upper:]')"
-        sed_inplace "s/^upgrade-guid = \".*\"/upgrade-guid = \"${NEW_UPGRADE_GUID}\"/" Cargo.toml
-        sed_inplace "s/^path-guid = \".*\"/path-guid = \"${NEW_PATH_GUID}\"/" Cargo.toml
-        sed_inplace "s/^binary-guid = \".*\"/binary-guid = \"${NEW_BINARY_GUID}\"/" Cargo.toml
-        sed_inplace "s/^shortcut-guid = \".*\"/shortcut-guid = \"${NEW_SHORTCUT_GUID}\"/" Cargo.toml
-        if [[ -f wix/main.wxs ]]; then
-            sed_inplace "s/${OLD_UPGRADE_GUID}/${NEW_UPGRADE_GUID}/g" wix/main.wxs
-            sed_inplace "s/${OLD_PATH_GUID}/${NEW_PATH_GUID}/g" wix/main.wxs
-            sed_inplace "s/${OLD_BINARY_GUID}/${NEW_BINARY_GUID}/g" wix/main.wxs
-            sed_inplace "s/${OLD_SHORTCUT_GUID}/${NEW_SHORTCUT_GUID}/g" wix/main.wxs
-        fi
-    fi
-
     # デバッグ設定のパッケージ名 / バイナリ名を更新
     if [[ -f .vscode/launch.json ]]; then
         sed_inplace "s/${CURRENT_NAME}/${NEW_NAME}/g" .vscode/launch.json
@@ -97,11 +75,6 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
         sed_inplace "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"
         sed_inplace "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" "$file"
     done
-
-    # wix/main.wxs のプロジェクト名を更新
-    if [[ -f wix/main.wxs ]]; then
-        sed_inplace "s/${CURRENT_NAME}/${NEW_NAME}/g" wix/main.wxs
-    fi
 fi
 
 # 著作権表記を更新(指定時のみ)
@@ -111,16 +84,10 @@ if [[ -n "$COPYRIGHT_HOLDER" ]]; then
         echo
     fi
 
-    OLD_COPYRIGHT_HOLDER="$(grep -E '^Copyright \(c\) ' LICENSE | sed -E 's/^Copyright \(c\) [0-9]+ (.*)/\1/')"
     COPYRIGHT_YEAR="$(date +%Y)"
     COPYRIGHT_LINE="Copyright (c) ${COPYRIGHT_YEAR} ${COPYRIGHT_HOLDER}"
     sed_inplace "s/^Copyright (c) .*/${COPYRIGHT_LINE}/" LICENSE
     sed_inplace "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE}\";/" build.rs
-
-    # wix/main.wxs の Manufacturer とレジストリキーを更新
-    if [[ -f wix/main.wxs && -n "$OLD_COPYRIGHT_HOLDER" && "$OLD_COPYRIGHT_HOLDER" != "$COPYRIGHT_HOLDER" ]]; then
-        sed_inplace "s/${OLD_COPYRIGHT_HOLDER}/${COPYRIGHT_HOLDER}/g" wix/main.wxs
-    fi
 fi
 
 # Cargo.lock を更新
@@ -134,5 +101,5 @@ echo "  - Cargo.toml の description, authors, repository"
 echo "  - README.md のタイトル"
 echo "  - assets/icon.ico"
 if [[ -z "$COPYRIGHT_HOLDER" ]]; then
-    echo "  - LICENSE / build.rs / wix/main.wxs の著作権表記(または copyright-holder を指定して再実行)"
+    echo "  - LICENSE / build.rs の著作権表記(または copyright-holder を指定して再実行)"
 fi

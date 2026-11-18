@@ -13,16 +13,14 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 │   ├── extensions.json     # 推奨拡張機能 (rust-analyzer / CodeLLDB など)
 │   ├── launch.json         # デバッグ設定 (CodeLLDB)
 │   └── settings.json       # ワークスペース設定 (保存時フォーマット / clippy)
-├── Cargo.toml              # プロジェクト定義・依存関係・WiX メタデータ
+├── Cargo.toml              # プロジェクト定義・依存関係
 ├── Cargo.lock
 ├── build.rs                # Windows 向け exe リソース埋め込み (winres)
 ├── rust-toolchain.toml     # Rust ツールチェーン (1.96 + rustfmt / clippy)
 ├── rustfmt.toml            # rustfmt 設定
 ├── LICENSE
 ├── assets/
-│   └── icon.ico            # Windows 向けアイコン (exe / MSI 共通)
-├── wix/
-│   └── main.wxs            # MSI 定義 (cargo-wix)。wix/ の他ファイルは .gitignore 対象
+│   └── icon.ico            # Windows 向け exe アイコン
 ├── src/
 │   ├── lib.rs              # ライブラリ本体
 │   └── main.rs             # バイナリエントリポイント
@@ -42,7 +40,6 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
     │   └── rename-project.sh
     └── windows/                # Windows 向けエントリポイント
         ├── build.ps1
-        ├── build-msi.ps1
         ├── test.ps1
         ├── clippy.ps1
         ├── format.ps1
@@ -55,13 +52,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 ### 前提
 
 - **Windows**: [PowerShell 7 以上](https://github.com/PowerShell/PowerShell/releases) (`pwsh`)。スクリプトは UTF-8 (BOM なし) です。エクスプローラーからダブルクリックで実行した場合は、結果を確認できるよう Enter 待ちになります (ターミナルからの実行では待ちません)。
-- **Windows リリースビルド / MSI**: Visual Studio Build Tools など MSVC ツールチェーン (C++ ワークロード) が必要です。
-- **MSI 作成 (Windows)**: [cargo-wix](https://github.com/volks73/cargo-wix) と [WiX Toolset v3.14.1](https://github.com/wixtoolset/wix3/releases) が必要です。コード署名証明書は不要です。
-
-```powershell
-cargo install cargo-wix --locked
-winget install WiXToolset.WiXToolset
-```
+- **Windows リリースビルド**: Visual Studio Build Tools など MSVC ツールチェーン (C++ ワークロード) が必要です。
 
 ### 1. テンプレートから新規プロジェクトを作る
 
@@ -102,17 +93,14 @@ git init
 - `Cargo.toml` の `name`
 - `src/main.rs` / `src/lib.rs` / `tests/integration_test.rs` の `use` 文とクレート doc コメント
 - `.vscode/launch.json` のパッケージ名 / バイナリ名
-- `wix/main.wxs` のプロジェクト名
-- `[package.metadata.wix]` の `upgrade-guid` / `path-guid` / `binary-guid` / `shortcut-guid` (MSI 用。別アプリとの衝突を防ぐため再生成)
 - `Cargo.lock` (`cargo check` で再生成)
 - (第 2 引数指定時) `LICENSE` / `build.rs` の著作権表記
-- (第 2 引数指定時) `wix/main.wxs` の `Manufacturer` とレジストリキー
 
 手動で更新が必要な箇所:
 
 - `Cargo.toml` の `description`, `authors`, `repository` など
 - `README.md` のタイトル
-- `assets/icon.ico` (Windows 向け exe / MSI アイコン)
+- `assets/icon.ico` (Windows 向け exe アイコン)
 
 著作権表記は `LICENSE` と `build.rs` の `LEGAL_COPYRIGHT` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
 
@@ -150,11 +138,7 @@ cargo fmt
 ./scripts/windows/clippy.ps1
 ./scripts/windows/format.ps1
 ./scripts/windows/check.ps1       # CI 向け一括チェック (fmt / clippy / test / doc)
-./scripts/windows/build-msi.ps1       # MSI インストーラー作成
-./scripts/windows/build-msi.ps1 -SkipBuild
 ```
-
-MSI は `target/wix/` に `{パッケージ名}-{バージョン}-{アーキテクチャ}.msi` として出力されます。`cargo wix` を直接使うこともできます。
 
 ## 含まれる設定
 
@@ -162,13 +146,6 @@ MSI は `target/wix/` に `{パッケージ名}-{バージョン}-{アーキテ�
 - **Clippy / Rust lints** (`unsafe_code = forbid` など)
 - **Release プロファイル** (LTO・strip 有効)
 - **Windows リソース** (`build.rs` + `winres` でアイコン・バージョン・著作権を exe に埋め込み。`winres` は Windows ビルド時のみ依存)
-- **Windows MSI** (`wix/main.wxs` + `cargo-wix`)
-  - ユーザー単位インストール (`InstallScope='perUser'` → `%LOCALAPPDATA%\{プロジェクト名}`)
-  - 日本語 UI (`culture = "ja-JP"` / `Language='1041'`)
-  - スタートメニューショートカット
-  - 任意の PATH 追加 (機能ツリーで選択)
-  - EULA ダイアログは無効 (ウェルカム画面から直接カスタマイズ画面へ)
-  - 署名なし
 - **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット・CodeLLDB デバッグ)
 - **ユニットテスト** (`src/lib.rs`) と **統合テスト** (`tests/`)
 
