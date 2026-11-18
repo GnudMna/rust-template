@@ -18,8 +18,13 @@ $ErrorActionPreference = 'Stop'
 # README の --release / -r もスイッチとして扱う
 # (Invoke-ScriptMain の scriptblock 内 $args はスクリプト引数ではない)
 $IsRelease = [bool]$Release
-if ($args -contains '--release' -or $args -contains '-r') {
-    $IsRelease = $true
+$UnknownArgs = @()
+foreach ($arg in $args) {
+    if ($arg -eq '--release' -or $arg -eq '-r') {
+        $IsRelease = $true
+    } else {
+        $UnknownArgs += $arg
+    }
 }
 
 # ダブルクリック実行時の Enter 待ちヘルパーを読み込み
@@ -29,6 +34,11 @@ if ($args -contains '--release' -or $args -contains '-r') {
 . (Join-Path $PSScriptRoot '..\common\invoke-native.ps1')
 
 Invoke-ScriptMain {
+    # 未知の引数は打ち間違いの可能性が高いため、ビルド前にエラーにする
+    if ($UnknownArgs.Count -gt 0) {
+        throw "不明な引数です: $($UnknownArgs -join ' ')`n使い方: ./build.ps1 [--release|-r]"
+    }
+
     # プロジェクトルートへ移動
     . (Join-Path $PSScriptRoot '..\common\cd-project-root.ps1')
 

@@ -23,6 +23,12 @@ for arg in "$@"; do
         --release|-r)
             RELEASE=true
             ;;
+        *)
+            # 打ち間違いを見逃さないよう、未知の引数はエラーにする
+            echo "不明な引数です: $arg" >&2
+            echo "使い方: ./build.sh [--release|-r]" >&2
+            exit 1
+            ;;
     esac
 done
 
