@@ -22,6 +22,7 @@ echo
 
 echo "テストを実行中..."
 cargo test --all-targets
+cargo test --doc
 echo
 
 # 完了メッセージを表示

@@ -29,6 +29,11 @@ Invoke-ScriptMain {
         throw "エラー: cargo test が終了コード $LASTEXITCODE で失敗しました"
     }
 
+    cargo test --doc
+    if ($LASTEXITCODE -ne 0) {
+        throw "エラー: cargo test --doc が終了コード $LASTEXITCODE で失敗しました"
+    }
+
     Write-Host ''
     Write-Host 'すべてのテストが完了しました'
 }

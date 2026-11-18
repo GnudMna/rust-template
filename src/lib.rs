@@ -10,6 +10,13 @@ pub const DEFAULT_NAME: &str = "world";
 ///
 /// # Returns
 /// * `String` - 挨拶メッセージ
+///
+/// # Examples
+/// ```
+/// use rust_template::greet;
+///
+/// assert_eq!(greet("world"), "Hello, world!");
+/// ```
 #[must_use]
 pub fn greet(name: &str) -> String {
     format!("Hello, {name}!")
