@@ -1,4 +1,3 @@
+# `rustfmt` を直接実行する場合にも Cargo.toml と同じ edition で整形する
+# その他の設定は既定値を使う。変更する設定のみ追記してください。
 edition = "2024"
-max_width = 100
-tab_spaces = 4
-use_small_heuristics = "Default"
