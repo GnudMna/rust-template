@@ -154,7 +154,7 @@ cargo fmt
 
 ## 含まれる設定
 
-- **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定
+- **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定 (更新時は `rust-toolchain.toml` の `channel` と `Cargo.toml` の `rust-version` を揃えて変更)
 - **Clippy / Rust lints** (`unsafe_code = forbid` など)
 - **Release プロファイル** (LTO・strip 有効)
 - **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行)
