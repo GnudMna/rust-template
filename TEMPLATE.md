@@ -44,7 +44,8 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
     │   ├── clippy.sh
     │   ├── format.sh
     │   ├── check.sh
-    │   └── rename-project.sh
+    │   ├── rename-project.sh
+    │   └── test-rename-project.sh  # rename-project のテスト
     └── windows/                # Windows 向けエントリポイント
         ├── build.ps1
         ├── test.ps1
@@ -118,6 +119,12 @@ git init
 著作権表記は `LICENSE` と `Cargo.toml` の `[package.metadata.winresource]` の `LegalCopyright` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
 
 `rename-project` スクリプトは名前の変更後もプロジェクトに残るため、再実行して名前を付け直せます。不要になったら削除して構いません。
+
+`rename-project` スクリプトを変更した場合は、`test-rename-project.sh` で動作を確認できます。プロジェクトの複製に対して `rename-project` を実行し、不正な引数の拒否、各ファイルの更新内容、改名後の `cargo test` を検証します。Windows では Git Bash から実行すると `rename-project.ps1` も検証し、sh 版と結果が一致することを確認します。
+
+```bash
+./scripts/unix/test-rename-project.sh
+```
 
 ## 3. ビルド・実行・テスト
 
