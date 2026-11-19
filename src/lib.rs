@@ -1,5 +1,8 @@
 //! `rust-template` 用のライブラリクレート
 
+// doctest は Clippy の対象外で警告も表示されないため、警告をエラーにして検出する
+#![doc(test(attr(deny(warnings))))]
+
 /// 引数がない場合に使う既定の名前
 pub const DEFAULT_NAME: &str = "world";
 
