@@ -1,7 +1,7 @@
 //! `rust-template` バイナリの統合テスト
 
 use std::ffi::{OsStr, OsString};
-use std::process::{Command, Output};
+use std::process::{Command, Output, Stdio};
 
 fn bin() -> Command {
     Command::new(env!(concat!("CARGO_BIN_EXE_", env!("CARGO_PKG_NAME"))))
@@ -63,4 +63,30 @@ fn prints_greeting_for_each_argument() {
 #[test]
 fn prints_greeting_for_invalid_unicode_argument() {
     assert_success_stdout(&run_os(&[invalid_unicode_arg()]), "Hello, \u{FFFD}!\n");
+}
+
+/// 出力先のパイプが途中で閉じられても panic せず正常終了すること
+#[test]
+fn exits_successfully_when_stdout_is_closed() {
+    // パイプのバッファを超える量を出力させ、書き込み中にパイプが閉じられる状況を作る
+    // (Windows のコマンドライン長の上限 32767 文字に収まる引数の数にする)
+    let mut child = bin()
+        .args(vec!["x"; 10_000])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap_or_else(|error| panic!("バイナリの起動に失敗しました: {error}"));
+    drop(child.stdout.take());
+
+    let output = child
+        .wait_with_output()
+        .unwrap_or_else(|error| panic!("バイナリの終了待ちに失敗しました: {error}"));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+
+    assert!(
+        output.status.success(),
+        "終了コードが成功ではありません: status={:?}, stderr={stderr}",
+        output.status.code()
+    );
+    assert_eq!(stderr.as_ref(), "", "stderr が空ではありません: {stderr}");
 }
