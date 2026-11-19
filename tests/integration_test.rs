@@ -1,5 +1,6 @@
 //! `rust-template` バイナリの統合テスト
 
+use std::ffi::{OsStr, OsString};
 use std::process::{Command, Output};
 
 fn bin() -> Command {
@@ -7,10 +8,30 @@ fn bin() -> Command {
 }
 
 fn run(args: &[&str]) -> Output {
+    run_os(args)
+}
+
+fn run_os<S: AsRef<OsStr>>(args: &[S]) -> Output {
     bin()
         .args(args)
         .output()
         .unwrap_or_else(|error| panic!("バイナリの起動に失敗しました: {error}"))
+}
+
+/// UTF-8 として不正なバイト列を含む引数
+#[cfg(unix)]
+fn invalid_unicode_arg() -> OsString {
+    use std::os::unix::ffi::OsStringExt;
+
+    OsString::from_vec(vec![0xFF])
+}
+
+/// 対になるサロゲートのない UTF-16 を含む引数
+#[cfg(windows)]
+fn invalid_unicode_arg() -> OsString {
+    use std::os::windows::ffi::OsStringExt;
+
+    OsString::from_wide(&[0xD800])
 }
 
 fn assert_success_stdout(output: &Output, expected_stdout: &str) {
@@ -36,4 +57,10 @@ fn prints_default_greeting_without_args() {
 #[test]
 fn prints_greeting_for_each_argument() {
     assert_success_stdout(&run(&["Alice", "Bob"]), "Hello, Alice!\nHello, Bob!\n");
+}
+
+/// 不正な Unicode を含む引数でも panic せず、置換文字に変換して挨拶を出力すること
+#[test]
+fn prints_greeting_for_invalid_unicode_argument() {
+    assert_success_stdout(&run_os(&[invalid_unicode_arg()]), "Hello, \u{FFFD}!\n");
 }
