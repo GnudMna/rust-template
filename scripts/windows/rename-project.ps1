@@ -59,7 +59,7 @@ Invoke-ScriptMain {
         throw 'エラー: プロジェクト名は kebab-case で指定してください (例: my-project)'
     }
 
-    # 著作権者名を検証(build.rs の文字列リテラルを壊す文字は不可)
+    # 著作権者名を検証(Cargo.toml の文字列リテラルを壊す文字は不可)
     if ($CopyrightHolder -match '["\\\p{Cc}]') {
         throw 'エラー: 著作権者名に " \ および制御文字(改行など)は使用できません'
     }
@@ -135,11 +135,11 @@ Invoke-ScriptMain {
         $License = [regex]::Replace($License, '(?m)^Copyright \(c\) .*', $CopyrightReplacement)
         Write-Utf8NoBom -Path $LicensePath -Value $License
 
-        $BuildRsPath = Join-Path $ProjectRoot 'build.rs'
-        $BuildRs = Read-Utf8NoBom -Path $BuildRsPath
-        $LegalCopyright = 'const LEGAL_COPYRIGHT: &str = "' + $CopyrightReplacement + '";'
-        $BuildRs = [regex]::Replace($BuildRs, 'const LEGAL_COPYRIGHT: &str = ".*";', $LegalCopyright)
-        Write-Utf8NoBom -Path $BuildRsPath -Value $BuildRs
+        # Cargo.toml は name 更新時に書き込み済みなので読み直す
+        $CargoToml = Read-Utf8NoBom -Path $CargoTomlPath
+        $LegalCopyright = 'LegalCopyright = "' + $CopyrightReplacement + '"'
+        $CargoToml = [regex]::Replace($CargoToml, '(?m)^LegalCopyright = ".*"', $LegalCopyright)
+        Write-Utf8NoBom -Path $CargoTomlPath -Value $CargoToml
     }
 
     # Cargo.lock を更新
@@ -149,10 +149,10 @@ Invoke-ScriptMain {
 
     # 手動更新が必要な項目を案内
     Write-Host '変更が完了しました。必要に応じて以下を手動で更新してください:'
-    Write-Host '  - Cargo.toml の description, authors, repository'
+    Write-Host '  - Cargo.toml の description, repository'
     Write-Host '  - README.md のタイトル'
     Write-Host '  - assets/icon.ico'
     if (-not $CopyrightHolder) {
-        Write-Host '  - LICENSE / build.rs の著作権表記(または -CopyrightHolder を指定して再実行)'
+        Write-Host '  - LICENSE / Cargo.toml の著作権表記(または -CopyrightHolder を指定して再実行)'
     }
 }

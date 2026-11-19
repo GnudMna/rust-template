@@ -3,11 +3,8 @@ name = "rust-template"
 version = "0.0.0"
 edition = "2024"
 rust-version = "1.96"
-authors = ["Your Name <you@example.com>"]
 description = "A Rust project template"
 license = "MIT"
-readme = "README.md"
-build = "build.rs"
 
 [dependencies]
 
@@ -15,6 +12,10 @@ build = "build.rs"
 winresource = "0.1"
 
 [dev-dependencies]
+
+[package.metadata.winresource]
+# Windows リソースの著作権表記。`LICENSE` と揃えて更新してください。
+LegalCopyright = "Copyright (c) 2026 Your Name"
 
 [lints.rust]
 unsafe_code = "forbid"
@@ -24,9 +25,6 @@ all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 
 [profile.release]
-opt-level = 3
-debug = false
 strip = true
 lto = "fat"
-incremental = false
 codegen-units = 1

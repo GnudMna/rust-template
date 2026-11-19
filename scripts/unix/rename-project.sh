@@ -21,7 +21,7 @@ fi
 usage() {
     echo "Usage: $0 <new-name> [copyright-holder]" >&2
     echo "  new-name         : kebab-case(例: my-project)" >&2
-    echo "  copyright-holder : 省略可 (LICENSE / build.rs を更新(例: \"Your Name\"))" >&2
+    echo "  copyright-holder : 省略可 (LICENSE / Cargo.toml を更新(例: \"Your Name\"))" >&2
     exit 1
 }
 
@@ -42,7 +42,7 @@ if [[ ! "$NEW_NAME" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
     exit 1
 fi
 
-# 著作権者名を検証(build.rs の文字列リテラルを壊す文字は不可)
+# 著作権者名を検証(Cargo.toml の文字列リテラルを壊す文字は不可)
 if [[ "$COPYRIGHT_HOLDER" == *'"'* || "$COPYRIGHT_HOLDER" == *'\'* || "$COPYRIGHT_HOLDER" =~ [[:cntrl:]] ]]; then
     echo "エラー: 著作権者名に \" \\ および制御文字(改行など)は使用できません" >&2
     exit 1
@@ -101,7 +101,7 @@ if [[ -n "$COPYRIGHT_HOLDER" ]]; then
     # sed の置換文字列で特殊な文字(/ と &)をエスケープ
     COPYRIGHT_LINE_ESCAPED="$(printf '%s' "$COPYRIGHT_LINE" | sed -e 's/[\/&]/\\&/g')"
     sed_inplace "s/^Copyright (c) .*/${COPYRIGHT_LINE_ESCAPED}/" LICENSE
-    sed_inplace "s/const LEGAL_COPYRIGHT: &str = \".*\";/const LEGAL_COPYRIGHT: \&str = \"${COPYRIGHT_LINE_ESCAPED}\";/" build.rs
+    sed_inplace "s/^LegalCopyright = \".*\"/LegalCopyright = \"${COPYRIGHT_LINE_ESCAPED}\"/" Cargo.toml
 fi
 
 # Cargo.lock を更新
@@ -111,9 +111,9 @@ echo
 
 # 手動更新が必要な項目を案内
 echo "変更が完了しました。必要に応じて以下を手動で更新してください:"
-echo "  - Cargo.toml の description, authors, repository"
+echo "  - Cargo.toml の description, repository"
 echo "  - README.md のタイトル"
 echo "  - assets/icon.ico"
 if [[ -z "$COPYRIGHT_HOLDER" ]]; then
-    echo "  - LICENSE / build.rs の著作権表記(または copyright-holder を指定して再実行)"
+    echo "  - LICENSE / Cargo.toml の著作権表記(または copyright-holder を指定して再実行)"
 fi
