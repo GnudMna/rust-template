@@ -114,7 +114,7 @@ git init
 
 - `Cargo.toml` の `description`, `repository` など
 - `README.md` の概要
-- `assets/icon.ico` (Windows 向け exe アイコン)
+- `assets/icon.ico` (Windows 向け exe アイコン。同梱のものは 32x32 の 1 サイズのみで、エクスプローラーの大きいアイコン表示や高 DPI 環境ではぼやけるため、16 / 24 / 32 / 48 / 256 px を含む ico に差し替えることを推奨)
 
 著作権表記は `LICENSE` と `Cargo.toml` の `[package.metadata.winresource]` の `LegalCopyright` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
 
