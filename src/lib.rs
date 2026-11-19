@@ -30,7 +30,7 @@ pub fn greet(name: &str) -> String {
 /// * `args` - プログラム名を除いたコマンドライン引数
 ///
 /// # Returns
-/// * 挨拶する名前の一覧
+/// * `Vec<String>` - 挨拶する名前の一覧
 #[must_use]
 pub fn names_from_args(args: impl IntoIterator<Item = impl AsRef<str>>) -> Vec<String> {
     let names: Vec<String> = args
