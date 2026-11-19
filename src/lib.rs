@@ -35,11 +35,12 @@ pub fn greet(name: &str) -> String {
 /// # Returns
 /// * `Vec<String>` - 挨拶する名前の一覧
 #[must_use]
-pub fn names_from_args(args: impl IntoIterator<Item = impl AsRef<str>>) -> Vec<String> {
+pub fn names_from_args(args: impl IntoIterator<Item = impl Into<String>>) -> Vec<String> {
+    // `String` を渡された場合は複製せずにそのまま使う
     let names: Vec<String> = args
         .into_iter()
-        .map(|name| name.as_ref().to_owned())
-        .filter(|name| !name.is_empty())
+        .map(Into::into)
+        .filter(|name: &String| !name.is_empty())
         .collect();
 
     if names.is_empty() {
