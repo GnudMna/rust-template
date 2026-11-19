@@ -16,7 +16,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 ├── Cargo.toml              # プロジェクト定義・依存関係
 ├── Cargo.lock
 ├── build.rs                # Windows 向け exe リソース埋め込み (winresource)
-├── rust-toolchain.toml     # Rust ツールチェーン (1.96 + rustfmt / clippy)
+├── rust-toolchain.toml     # Rust ツールチェーン (rustfmt / clippy 付き)
 ├── rustfmt.toml            # rustfmt 設定
 ├── LICENSE
 ├── assets/
@@ -30,6 +30,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
     ├── common/                 # 共通ヘルパー
     │   ├── cd-project-root.sh
     │   ├── cd-project-root.ps1
+    │   ├── invoke-native.ps1
     │   └── wait-if-double-clicked.ps1
     ├── unix/                   # Linux / macOS 向けエントリポイント
     │   ├── build.sh
@@ -105,15 +106,15 @@ git init
 - `src/main.rs` / `src/lib.rs` / `tests/integration_test.rs` の `use` 文とクレート doc コメント
 - `.vscode/launch.json` のパッケージ名 / バイナリ名
 - `Cargo.lock` (`cargo check` で再生成)
-- (第 2 引数指定時) `LICENSE` / `build.rs` の著作権表記
+- (第 2 引数指定時) `LICENSE` / `Cargo.toml` の著作権表記
 
 手動で更新が必要な箇所:
 
-- `Cargo.toml` の `description`, `authors`, `repository` など
+- `Cargo.toml` の `description`, `repository` など
 - `README.md` のタイトル
 - `assets/icon.ico` (Windows 向け exe アイコン)
 
-著作権表記は `LICENSE` と `build.rs` の `LEGAL_COPYRIGHT` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
+著作権表記は `LICENSE` と `Cargo.toml` の `[package.metadata.winresource]` の `LegalCopyright` で同じ形式 (`Copyright (c) <年> Your Name`) に揃えてください。第 2 引数で著作権者を指定すると、年は実行時の西暦で更新されます。
 
 ### 3. ビルド・実行・テスト
 
@@ -153,7 +154,7 @@ cargo fmt
 
 ## 含まれる設定
 
-- **Edition 2024** / `rust-version = "1.96"` (`rust-toolchain.toml` で固定)
+- **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定
 - **Clippy / Rust lints** (`unsafe_code = forbid` など)
 - **Release プロファイル** (LTO・strip 有効)
 - **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行)
@@ -162,4 +163,4 @@ cargo fmt
 
 ## ライセンス
 
-MIT (利用時に `Cargo.toml` の `authors` や `LICENSE` を適宜変更してください)
+MIT (利用時に `LICENSE` を適宜変更してください)
