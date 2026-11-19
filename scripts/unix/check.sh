@@ -16,7 +16,7 @@ source "$SCRIPT_DIR/../common/cd-project-root.sh"
 # エラー時のメッセージを設定
 trap 'echo "チェックに失敗しました" >&2' ERR
 
-# 品質チェックを開始
+# 品質チェックを開始(--locked で Cargo.lock の更新漏れもエラーにする)
 echo "品質チェックを実行しています..."
 echo
 
@@ -27,18 +27,18 @@ echo
 
 # Clippy を実行
 echo "Clippy を実行中..."
-cargo clippy --all-targets -- -D warnings
+cargo clippy --all-targets --locked -- -D warnings
 echo
 
 # テストを実行
 echo "テストを実行中..."
-cargo test --all-targets
-cargo test --doc
+cargo test --all-targets --locked
+cargo test --doc --locked
 echo
 
 # ドキュメントを生成(警告をエラーとして扱う)
 echo "ドキュメントを生成中..."
-RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --locked
 echo
 
 # 完了メッセージを表示

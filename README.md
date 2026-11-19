@@ -154,6 +154,8 @@ cargo fmt
 ./scripts/windows/check.ps1       # CI 向け一括チェック (fmt / clippy / test / doc)
 ```
 
+`check` スクリプトは `--locked` 付きで実行するため、`Cargo.lock` が `Cargo.toml` の変更に追従していない場合も失敗します。その場合は `cargo build` などで `Cargo.lock` を更新してからコミットしてください。
+
 ## 含まれる設定
 
 - **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定 (更新時は `rust-toolchain.toml` の `channel` と `Cargo.toml` の `rust-version` を揃えて変更)

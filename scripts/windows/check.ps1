@@ -21,7 +21,7 @@ Invoke-ScriptMain {
     # プロジェクトルートへ移動
     . (Join-Path $PSScriptRoot '..\common\cd-project-root.ps1')
 
-    # 品質チェックを開始
+    # 品質チェックを開始(--locked で Cargo.lock の更新漏れもエラーにする)
     Write-Host '品質チェックを実行しています...'
     Write-Host ''
 
@@ -32,14 +32,14 @@ Invoke-ScriptMain {
 
     # Clippy を実行
     Write-Host 'Clippy を実行中...'
-    Invoke-Native cargo clippy --all-targets '--' -D warnings
+    Invoke-Native cargo clippy --all-targets --locked '--' -D warnings
     Write-Host ''
 
     # テストを実行
     Write-Host 'テストを実行中...'
-    Invoke-Native cargo test --all-targets
+    Invoke-Native cargo test --all-targets --locked
 
-    Invoke-Native cargo test --doc
+    Invoke-Native cargo test --doc --locked
     Write-Host ''
 
     # ドキュメントを生成(警告をエラーとして扱う)
@@ -47,7 +47,7 @@ Invoke-ScriptMain {
     $previousRustdocFlags = $env:RUSTDOCFLAGS
     $env:RUSTDOCFLAGS = '-D warnings'
     try {
-        Invoke-Native cargo doc --no-deps
+        Invoke-Native cargo doc --no-deps --locked
     } finally {
         if ($null -eq $previousRustdocFlags) {
             Remove-Item Env:RUSTDOCFLAGS -ErrorAction SilentlyContinue
