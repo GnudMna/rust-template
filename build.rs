@@ -1,4 +1,5 @@
 /// アイコンパス
+#[cfg(windows)]
 const ICON_PATH: &str = "assets/icon.ico";
 
 fn main() {
@@ -21,6 +22,12 @@ fn main() {
         );
     }
 
+    embed_resource();
+}
+
+/// アイコン・バージョン情報・著作権表記を exe に埋め込む
+#[cfg(windows)]
+fn embed_resource() {
     // アイコンパスを再実行条件に追加
     println!("cargo::rerun-if-changed={ICON_PATH}");
 
@@ -32,4 +39,13 @@ fn main() {
     if let Err(error) = res.compile() {
         panic!("Windows リソースの埋め込みに失敗: {error}");
     }
+}
+
+/// winresource は Windows 上でのビルドでのみ依存に含めるため (Cargo.toml の
+/// `[target.'cfg(windows)'.build-dependencies]`), 他の OS からのクロスビルドでは埋め込まない
+#[cfg(not(windows))]
+fn embed_resource() {
+    println!(
+        "cargo::warning=Windows 以外の OS でのビルドのため、exe にアイコン・バージョン情報・著作権表記を埋め込みません"
+    );
 }

@@ -59,7 +59,7 @@ cargo fmt
 - **CRT の静的リンク** (`.cargo/config.toml` で Windows MSVC ターゲットのみ `+crt-static`。VC++ 再頒布可能パッケージなしで exe が動作)
   - 環境変数 `RUSTFLAGS` (または `CARGO_ENCODED_RUSTFLAGS`) を設定すると、この指定は使われません。その場合は `-C target-feature=+crt-static` も含めてください。静的リンクが外れると `build.rs` がビルド時に警告します
   - Windows MSVC ではこの指定が `build.rustflags` より優先されるため、`~/.cargo/config.toml` などで設定した `build.rustflags` はこのプロジェクトでは使われません
-- **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行)
+- **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行。`winresource` は Windows 上でのビルドでのみ依存に含めるため、Linux / macOS では余分なビルドが発生しない代わりに、そこから Windows 向けにクロスビルドした exe には埋め込まれない)
 - **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット・CodeLLDB デバッグ)
 - **ユニットテスト** (`src/lib.rs`) と **統合テスト** (`tests/`)
 
