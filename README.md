@@ -6,6 +6,9 @@
 
 ## 前提
 
+- **共通**: [rustup](https://rustup.rs/)。ツールチェーンは `rust-toolchain.toml` に従って rustup が自動でインストールします (インストールされない場合はプロジェクトルートで `rustup toolchain install` を実行してください)。OS のパッケージマネージャーで入れた Rust では `rust-toolchain.toml` が効かず、`Cargo.toml` の `rust-version` より古い場合はビルドできません。
+- **Linux**: C リンカ (`cc`)。Debian / Ubuntu では `build-essential`、Fedora では `gcc` パッケージなどで入ります。
+- **macOS**: Xcode Command Line Tools (`xcode-select --install`)。
 - **Windows**: [PowerShell 7 以上](https://github.com/PowerShell/PowerShell/releases) (`pwsh`)。スクリプトは UTF-8 (BOM なし) です。`.ps1` は既定の関連付けではダブルクリックするとメモ帳で開かれます。ダブルクリックで実行したい場合は、`.ps1` の関連付けを `pwsh` に変更してください。関連付けを変更してエクスプローラーからダブルクリックで実行した場合は、結果を確認できるよう Enter 待ちになります (ターミナルからの実行では待ちません)。
 - **Windows ビルド (デバッグ / リリース共通)**: Visual Studio Build Tools など MSVC ツールチェーン (C++ ワークロード、リンカと Windows SDK の `rc.exe` を含む) が必要です。
 
