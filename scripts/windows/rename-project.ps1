@@ -59,6 +59,27 @@ Invoke-ScriptMain {
         throw 'エラー: プロジェクト名は kebab-case で指定してください (例: my-project)'
     }
 
+    # Rust 識別子が予約された名前でないか検証(ファイルを書き換える前に弾く)
+    $NewIdent = $NewName -replace '-', '_'
+    $ReservedNames = @(
+        # キーワード(将来の予約語を含む)
+        'abstract', 'as', 'async', 'await', 'become', 'box', 'break', 'const', 'continue',
+        'crate', 'do', 'dyn', 'else', 'enum', 'extern', 'false', 'final', 'fn', 'for', 'gen',
+        'if', 'impl', 'in', 'let', 'loop', 'macro', 'match', 'mod', 'move', 'mut', 'override',
+        'priv', 'pub', 'ref', 'return', 'self', 'static', 'struct', 'super', 'trait', 'true',
+        'try', 'type', 'typeof', 'unsafe', 'unsized', 'use', 'virtual', 'where', 'while', 'yield',
+        # 標準ライブラリのクレート名
+        'alloc', 'core', 'proc_macro', 'std', 'test',
+        # Cargo のビルドディレクトリ名
+        'build', 'deps', 'examples', 'incremental',
+        # Windows の予約デバイス名
+        'aux', 'con', 'nul', 'prn', 'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7',
+        'com8', 'com9', 'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9'
+    )
+    if ($ReservedNames -contains $NewIdent) {
+        throw "エラー: `"$NewName`" は Rust または Cargo で予約された名前のため使用できません"
+    }
+
     # 著作権者名を検証(Cargo.toml の文字列リテラルを壊す文字は不可)
     if ($CopyrightHolder -match '["\\\p{Cc}]') {
         throw 'エラー: 著作権者名に " \ および制御文字(改行など)は使用できません'
@@ -72,7 +93,6 @@ Invoke-ScriptMain {
     }
 
     $CurrentName = $Matches[1]
-    $NewIdent = $NewName -replace '-', '_'
     $OldIdent = $CurrentName -replace '-', '_'
 
     # 変更が不要な場合は終了(著作権者のみ更新する場合は続行)

@@ -42,6 +42,29 @@ if [[ ! "$NEW_NAME" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
     exit 1
 fi
 
+# Rust 識別子が予約された名前でないか検証(ファイルを書き換える前に弾く)
+NEW_IDENT="${NEW_NAME//-/_}"
+RESERVED_NAMES=(
+    # キーワード(将来の予約語を含む)
+    abstract as async await become box break const continue crate do dyn else enum extern
+    false final fn for gen if impl in let loop macro match mod move mut override priv pub
+    ref return self static struct super trait true try type typeof unsafe unsized use
+    virtual where while yield
+    # 標準ライブラリのクレート名
+    alloc core proc_macro std test
+    # Cargo のビルドディレクトリ名
+    build deps examples incremental
+    # Windows の予約デバイス名
+    aux con nul prn com1 com2 com3 com4 com5 com6 com7 com8 com9
+    lpt1 lpt2 lpt3 lpt4 lpt5 lpt6 lpt7 lpt8 lpt9
+)
+for reserved in "${RESERVED_NAMES[@]}"; do
+    if [[ "$NEW_IDENT" == "$reserved" ]]; then
+        echo "エラー: \"${NEW_NAME}\" は Rust または Cargo で予約された名前のため使用できません" >&2
+        exit 1
+    fi
+done
+
 # 著作権者名を検証(Cargo.toml の文字列リテラルを壊す文字は不可)
 if [[ "$COPYRIGHT_HOLDER" == *'"'* || "$COPYRIGHT_HOLDER" == *'\'* || "$COPYRIGHT_HOLDER" =~ [[:cntrl:]] ]]; then
     echo "エラー: 著作権者名に \" \\ および制御文字(改行など)は使用できません" >&2
@@ -50,7 +73,6 @@ fi
 
 # 現在のプロジェクト名と Rust 識別子を取得
 CURRENT_NAME="$(grep -E '^name = ' Cargo.toml | head -1 | sed -E 's/^name = "(.*)"/\1/')"
-NEW_IDENT="${NEW_NAME//-/_}"
 OLD_IDENT="${CURRENT_NAME//-/_}"
 
 # 変更が不要な場合は終了(著作権者のみ更新する場合は続行)
