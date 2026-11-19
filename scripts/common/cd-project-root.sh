@@ -5,11 +5,11 @@
 # Usage       : source "$SCRIPT_DIR/../common/cd-project-root.sh"
 # ========================================================================
 
-# スクリプトのディレクトリを取得
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# このスクリプト自身のディレクトリを取得(呼び出し元の SCRIPT_DIR を上書きしない)
+_COMMON_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # プロジェクトのルートディレクトリを計算
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PROJECT_ROOT="$(cd "$_COMMON_DIR/../.." && pwd)"
 
 # プロジェクトルートを環境変数にエクスポート
 export PROJECT_ROOT
