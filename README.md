@@ -159,6 +159,7 @@ cargo fmt
 ## 含まれる設定
 
 - **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定 (更新時は `rust-toolchain.toml` の `channel` と `Cargo.toml` の `rust-version` を揃えて変更)
+- **誤公開の防止** (`Cargo.toml` の `publish = false`。crates.io に公開する場合は削除)
 - **Clippy / Rust lints** (`unsafe_code = forbid` など)
 - **Release プロファイル** (LTO・strip 有効)
 - **CRT の静的リンク** (`.cargo/config.toml` で Windows MSVC ターゲットのみ `+crt-static`。VC++ 再頒布可能パッケージなしで exe が動作)
