@@ -72,7 +72,12 @@ if [[ "$COPYRIGHT_HOLDER" == *'"'* || "$COPYRIGHT_HOLDER" == *'\'* || "$COPYRIGH
 fi
 
 # 現在のプロジェクト名と Rust 識別子を取得
-CURRENT_NAME="$(grep -E '^name = ' Cargo.toml | head -1 | sed -E 's/^name = "(.*)"/\1/')"
+# (grep だと一致しない場合に pipefail で無言のまま終了するため、一致しなくても成功する sed で抽出する)
+CURRENT_NAME="$(sed -nE 's/^name = "([^"]+)".*/\1/p' Cargo.toml | head -1)"
+if [[ -z "$CURRENT_NAME" ]]; then
+    echo "エラー: Cargo.toml から name を読み取れません" >&2
+    exit 1
+fi
 OLD_IDENT="${CURRENT_NAME//-/_}"
 
 # 変更が不要な場合は終了(著作権者のみ更新する場合は続行)
