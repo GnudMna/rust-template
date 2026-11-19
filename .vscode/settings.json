@@ -4,6 +4,5 @@
         "editor.defaultFormatter": "rust-lang.rust-analyzer"
     },
     "rust-analyzer.check.command": "clippy",
-    "rust-analyzer.check.extraArgs": ["--", "-D", "warnings"],
     "rust-analyzer.debug.engine": "vadimcn.vscode-lldb"
 }
