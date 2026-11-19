@@ -136,6 +136,21 @@ Invoke-ScriptMain {
             $Content = $Content.Replace($OldCrateRef, $NewCrateRef)
             Write-Utf8NoBom -Path $FilePath -Value $Content
         }
+
+        # README のタイトルを更新し、テンプレートの案内行(と直後の空行)を削除
+        $ReadmePath = Join-Path $ProjectRoot 'README.md'
+        if (Test-Path -LiteralPath $ReadmePath) {
+            $Readme = Read-Utf8NoBom -Path $ReadmePath
+            $Readme = $Readme -replace "(?m)^# $([regex]::Escape($CurrentName))(?=\r?$)", ('# ' + $NewName.Replace('$', '$$'))
+            $Readme = $Readme -replace '(?m)^.*<!-- template-notice.*\r?\n(\r?\n)?', ''
+            Write-Utf8NoBom -Path $ReadmePath -Value $Readme
+        }
+
+        # テンプレートの使い方はプロジェクトに不要なため削除
+        $TemplateDocPath = Join-Path $ProjectRoot 'TEMPLATE.md'
+        if (Test-Path -LiteralPath $TemplateDocPath) {
+            Remove-Item -LiteralPath $TemplateDocPath
+        }
     }
 
     # 著作権表記を更新(指定時のみ)
@@ -170,7 +185,7 @@ Invoke-ScriptMain {
     # 手動更新が必要な項目を案内
     Write-Host '変更が完了しました。必要に応じて以下を手動で更新してください:'
     Write-Host '  - Cargo.toml の description, repository'
-    Write-Host '  - README.md のタイトル'
+    Write-Host '  - README.md の概要'
     Write-Host '  - assets/icon.ico'
     if (-not $CopyrightHolder) {
         Write-Host '  - LICENSE / Cargo.toml の著作権表記(または -CopyrightHolder を指定して再実行)'

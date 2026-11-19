@@ -109,6 +109,17 @@ if [[ "$NAME_UNCHANGED" == false ]]; then
         sed_inplace "s/use ${OLD_IDENT}::/use ${NEW_IDENT}::/g" "$file"
         sed_inplace "s/\`${CURRENT_NAME}\`/\`${NEW_NAME}\`/g" "$file"
     done
+
+    # README のタイトルを更新し、テンプレートの案内行(と直後の空行)を削除
+    if [[ -f README.md ]]; then
+        sed_inplace \
+            -e "s/^# ${CURRENT_NAME}\$/# ${NEW_NAME}/" \
+            -e '/<!-- template-notice/{N;d;}' \
+            README.md
+    fi
+
+    # テンプレートの使い方はプロジェクトに不要なため削除
+    rm -f TEMPLATE.md
 fi
 
 # 著作権表記を更新(指定時のみ)
@@ -134,7 +145,7 @@ echo
 # 手動更新が必要な項目を案内
 echo "変更が完了しました。必要に応じて以下を手動で更新してください:"
 echo "  - Cargo.toml の description, repository"
-echo "  - README.md のタイトル"
+echo "  - README.md の概要"
 echo "  - assets/icon.ico"
 if [[ -z "$COPYRIGHT_HOLDER" ]]; then
     echo "  - LICENSE / Cargo.toml の著作権表記(または copyright-holder を指定して再実行)"
