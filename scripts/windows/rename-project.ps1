@@ -88,7 +88,7 @@ Invoke-ScriptMain {
     # 現在のプロジェクト名と Rust 識別子を取得
     $CargoTomlPath = Join-Path $ProjectRoot 'Cargo.toml'
     $CargoToml = Read-Utf8NoBom -Path $CargoTomlPath
-    if ($CargoToml -notmatch 'name = "([^"]+)"') {
+    if ($CargoToml -notmatch '(?m)^name = "([^"]+)"') {
         throw 'エラー: Cargo.toml から name を読み取れません'
     }
 
@@ -107,7 +107,7 @@ Invoke-ScriptMain {
         Write-Host ''
 
         # Cargo.toml の name を更新
-        $CargoToml = $CargoToml -replace "name = `"$CurrentName`"", "name = `"$NewName`""
+        $CargoToml = $CargoToml -replace "(?m)^name = `"$([regex]::Escape($CurrentName))`"", "name = `"$NewName`""
 
         Write-Utf8NoBom -Path $CargoTomlPath -Value $CargoToml
 
