@@ -9,7 +9,11 @@ use std::env;
 use rust_template::{greet, names_from_args};
 
 fn main() {
-    for name in names_from_args(env::args().skip(1)) {
+    for name in names_from_args(
+        env::args_os()
+            .skip(1)
+            .map(|arg| arg.to_string_lossy().into_owned()),
+    ) {
         println!("{}", greet(&name));
     }
 }
