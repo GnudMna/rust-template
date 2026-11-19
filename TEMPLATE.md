@@ -20,7 +20,7 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 ├── Cargo.toml              # プロジェクト定義・依存関係
 ├── Cargo.lock
 ├── build.rs                # Windows 向け exe リソース埋め込み (winresource)
-├── rust-toolchain.toml     # Rust ツールチェーン (rustfmt / clippy 付き)
+├── rust-toolchain.toml     # Rust ツールチェーン (rustfmt / clippy / rust-src 付き)
 ├── rustfmt.toml            # rustfmt 設定
 ├── LICENSE
 ├── README.md               # プロジェクトの説明 (雛形)
