@@ -12,6 +12,8 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
 │   └── config.toml         # Windows MSVC 向けの CRT 静的リンク設定
 ├── .editorconfig           # エディタ共通設定
 ├── .gitattributes          # 改行コード (LF) とバイナリファイルの扱い
+├── .githooks/
+│   └── pre-push            # push 前に check を実行する Git フック (install-hooks で有効化)
 ├── .gitignore
 ├── .vscode/
 │   ├── extensions.json     # 推奨拡張機能 (rust-analyzer / CodeLLDB など)
@@ -44,6 +46,8 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
     │   ├── clippy.sh
     │   ├── format.sh
     │   ├── check.sh
+    │   ├── install-hooks.sh
+    │   ├── uninstall-hooks.sh
     │   ├── rename-project.sh
     │   └── test-rename-project.sh  # rename-project のテスト
     └── windows/                # Windows 向けエントリポイント
@@ -52,6 +56,8 @@ Rust プロジェクトのテンプレートです。新規プロジェクトの
         ├── clippy.ps1
         ├── format.ps1
         ├── check.ps1
+        ├── install-hooks.ps1
+        ├── uninstall-hooks.ps1
         └── rename-project.ps1
 ```
 

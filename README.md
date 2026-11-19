@@ -50,6 +50,30 @@ cargo fmt
 
 `check` スクリプトは `--locked` 付きで実行するため、`Cargo.lock` が `Cargo.toml` の変更に追従していない場合も失敗します。その場合は `cargo build` などで `Cargo.lock` を更新してからコミットしてください。
 
+## Git フック (任意)
+
+push 前に `check` スクリプトを自動で実行する Git フック (`.githooks/pre-push`) を用意しています。`core.hooksPath` はクローンに引き継がれないため、クローンごとに次のスクリプトで有効にしてください。
+
+**Linux / macOS**
+
+```bash
+./scripts/unix/install-hooks.sh     # 有効にする (core.hooksPath を .githooks に設定)
+./scripts/unix/uninstall-hooks.sh   # 無効にする (core.hooksPath の設定を解除)
+```
+
+**Windows**
+
+```powershell
+./scripts/windows/install-hooks.ps1
+./scripts/windows/uninstall-hooks.ps1
+```
+
+- 検査するのは push するコミットではなく作業ツリーの内容です。コミットしていない変更があると結果が異なる場合があります
+- 一時的に省略する場合は `git push --no-verify` を使います
+- 有効にしている間は `.git/hooks` やグローバル設定の `core.hooksPath` にあるフックは使われません (有効にする時点で該当するフックがあれば表示します)
+- `core.hooksPath` が既に別の値に設定されている場合は、上書きや解除をせずにエラーにします
+- フックは Windows では `scripts/windows/check.ps1` を、それ以外では `scripts/unix/check.sh` を実行します
+
 ## 含まれる設定
 
 - **Edition 2024** / `rust-toolchain.toml` でツールチェーンを固定 (更新時は `rust-toolchain.toml` の `channel` と `Cargo.toml` の `rust-version` を揃えて変更)
@@ -61,6 +85,7 @@ cargo fmt
   - Windows MSVC ではこの指定が `build.rustflags` より優先されるため、`~/.cargo/config.toml` などで設定した `build.rustflags` はこのプロジェクトでは使われません
 - **Windows リソース** (`build.rs` + `winresource` でアイコン・バージョン・著作権を exe に埋め込み。ビルド対象 OS が Windows の場合のみ `CARGO_CFG_TARGET_OS` で判定して実行。`winresource` は Windows 上でのビルドでのみ依存に含めるため、Linux / macOS では余分なビルドが発生しない代わりに、そこから Windows 向けにクロスビルドした exe には埋め込まれない)
 - **エディタ設定** (`.editorconfig`, `.gitattributes`, `.vscode/` で rust-analyzer 推奨・保存時フォーマット・CodeLLDB デバッグ)
+- **Git フック** (`.githooks/pre-push` で push 前に `check` を実行。`install-hooks` スクリプトで有効にした場合のみ)
 - **ユニットテスト** (`src/lib.rs`) と **統合テスト** (`tests/`)
 
 ## ライセンス
