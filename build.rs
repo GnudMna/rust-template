@@ -11,6 +11,16 @@ fn main() {
         return;
     }
 
+    // 環境変数 `RUSTFLAGS` などがあると `.cargo/config.toml` の rustflags は使われず,
+    // 気付かないまま CRT が動的リンクになるため警告する
+    let crt_static = std::env::var("CARGO_CFG_TARGET_FEATURE")
+        .is_ok_and(|features| features.split(',').any(|feature| feature == "crt-static"));
+    if std::env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") && !crt_static {
+        println!(
+            "cargo::warning=CRT が静的リンクされません。環境変数 RUSTFLAGS などがあると .cargo/config.toml の rustflags は使われないため、必要なら -C target-feature=+crt-static を加えてください"
+        );
+    }
+
     // アイコンパスを再実行条件に追加
     println!("cargo::rerun-if-changed={ICON_PATH}");
 

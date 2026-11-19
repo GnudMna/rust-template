@@ -1,2 +1,3 @@
+# 環境変数 RUSTFLAGS などがあるとこの rustflags は使われない (静的リンクが外れると build.rs が警告する)
 [target.'cfg(all(windows, target_env = "msvc"))']
 rustflags = ["-C", "target-feature=+crt-static"]
