@@ -1,35 +1,9 @@
 //! `rust-template` バイナリの統合テスト
 
-use std::env;
-use std::path::PathBuf;
 use std::process::{Command, Output};
 
-/// 統合テストから起動するバイナリのパスを返す
-fn bin_path() -> PathBuf {
-    // Cargo はバイナリ名をそのまま使う (`-` は `_` に置換されない)
-    let env_key = format!("CARGO_BIN_EXE_{}", env!("CARGO_PKG_NAME"));
-
-    if let Some(path) = env::var_os(env_key) {
-        return PathBuf::from(path);
-    }
-
-    // `cargo test` 以外でテストバイナリを直接実行した場合のフォールバック
-    let mut path = env::current_exe()
-        .unwrap_or_else(|error| panic!("テスト実行ファイルのパスを取得できません: {error}"));
-    path.pop();
-    if path.file_name().is_some_and(|name| name == "deps") {
-        path.pop();
-    }
-    path.push(format!(
-        "{}{}",
-        env!("CARGO_PKG_NAME"),
-        env::consts::EXE_SUFFIX
-    ));
-    path
-}
-
 fn bin() -> Command {
-    Command::new(bin_path())
+    Command::new(env!(concat!("CARGO_BIN_EXE_", env!("CARGO_PKG_NAME"))))
 }
 
 fn run(args: &[&str]) -> Output {
